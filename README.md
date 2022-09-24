@@ -1,8 +1,8 @@
-# Handle Late Arriving data using workflow
+# Handle Late Arriving data using Workflow
 Sometimes, there are delays in data pipelines which means we may not have the latest information to trigger downstream systems.
 Cloud Workflow can be effective in handling those use cases and this repo has an example shows how. 
 
-## Set up the workflow
+## Set up the Workflow
 ### Set environment variables
 ```
 export PROJECT_ID=<replace with your gcp project id>
