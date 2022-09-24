@@ -1,0 +1,39 @@
+main:
+  steps:
+    - init:
+        assign:
+          - project: ${sys.get_env("GOOGLE_CLOUD_PROJECT_ID")}
+          - customer_id: 1234 # can be passed in from other services
+    - check_if_customer_exists:
+        try:
+          call: http.post
+          args:
+            url: ${"https://europe-west2-" + project + ".cloudfunctions.net/customer_check"}
+            headers:
+              Content-Type: application/json
+            body:
+              customer_id: ${customer_id}
+            auth:
+              type: OIDC
+          result: customer_check_status
+        retry:
+          predicate: ${predicate_retry_when_not_found}
+          max_retries: 10
+          backoff:
+            initial_delay: 2
+            max_delay: 30
+            multiplier: 2
+    - important_action_for_customer:
+        call: sys.log
+        args:
+          data: "Some important action is triggered for the customer"
+
+predicate_retry_when_not_found:
+  params: [ e ]
+  steps:
+    - what_to_repeat:
+        switch:
+          - condition: ${e.code == 404}
+            return: true
+    - otherwise:
+        return: false
